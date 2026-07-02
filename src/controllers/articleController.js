@@ -99,8 +99,8 @@ async function updateArticle(req, res) {
     }
 
     res.status(200).json({ article: result.rows[0] });
-  } catch (err) {
-    console.error(err);
+} catch (err) {
+    console.log('UPDATE ERROR:', err.message);
     res.status(500).json({ error: 'Could not update article' });
   }
 }
