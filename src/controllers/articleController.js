@@ -82,17 +82,24 @@ async function updateArticle(req, res) {
     const authorId = req.userId;
 
     const result = await pool.query(
-      `UPDATE articles
-       SET
-         title = COALESCE($1, title),
-         subtitle = COALESCE($2, subtitle),
-         blocks = COALESCE($3, blocks),
-         cover_image_url = COALESCE($4, cover_image_url),
-         updated_at = now()
-       WHERE id = $5 AND author_id = $6
-       RETURNING *`,
-      [title, subtitle, blocks, cover_image_url, id, authorId]
-    );
+  `UPDATE articles
+   SET
+     title = COALESCE($1, title),
+     subtitle = COALESCE($2, subtitle),
+     blocks = COALESCE($3::jsonb, blocks),
+     cover_image_url = COALESCE($4, cover_image_url),
+     updated_at = now()
+   WHERE id = $5 AND author_id = $6
+   RETURNING *`,
+  [
+    title,
+    subtitle,
+    blocks ? JSON.stringify(blocks) : null,
+    cover_image_url,
+    id,
+    authorId
+  ]
+);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Article not found or unauthorized' });
