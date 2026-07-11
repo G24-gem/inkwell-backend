@@ -38,7 +38,7 @@ async function getProfile(req, res) {
       articles: articles.rows
     });
   } catch (err) {
-    console.log('GET PROFILE ERROR:', err.message);
+    console.log('GET PROFILE ERROR:', err);
     res.status(500).json({ error: 'Could not fetch profile' });
   }
 }
