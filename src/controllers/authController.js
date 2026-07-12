@@ -95,6 +95,12 @@ async function login(req, res) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    // Get username from profiles
+    const profile = await pool.query(
+      'SELECT username FROM profiles WHERE id = $1',
+      [user.id]
+    );
+
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id },
@@ -104,13 +110,16 @@ async function login(req, res) {
 
     res.status(200).json({
       token,
-      user: { id: user.id, email: user.email }
+      user: {
+        id: user.id,
+        email: user.email,
+        username: profile.rows[0]?.username
+      }
     });
 
   } catch (err) {
-    console.error(err);
+    console.log('LOGIN ERROR:', err.message);
     res.status(500).json({ error: 'Something went wrong during login' });
   }
 }
-
 module.exports = { register, login };
